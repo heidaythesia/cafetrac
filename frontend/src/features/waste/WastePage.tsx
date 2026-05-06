@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function WastePage() {
@@ -89,80 +89,85 @@ export default function WastePage() {
           </div>
         </div>
 
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
-          <DrawerTrigger asChild>
-            <Button size="lg" className="rounded-xl shadow-lg active:scale-95 text-md px-6 bg-merlot hover:bg-merlot/90 text-white border-none">
-              Log Waste
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent className="bg-card border-border px-4">
-            <div className="mx-auto w-full max-w-sm">
-              <DrawerHeader>
-                <DrawerTitle className="text-2xl font-heading">Record Waste</DrawerTitle>
-              </DrawerHeader>
-              <div className="p-4 pb-0 space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Select Item</label>
-                  <Select value={selectedItem} onValueChange={(val) => setSelectedItem(val || '')}>
-                    <SelectTrigger className="h-14 text-lg bg-white/40 backdrop-blur-sm border-2 border-primary/20">
-                      <SelectValue placeholder="Tap to choose item" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[40vh]">
-                      {isLoading ? <div className="p-2"><Skeleton className="h-8 w-full" /></div> :
-                        inventory?.slice().sort((a: any, b: any) => a.name.localeCompare(b.name)).map((i: any) => (
-                          <SelectItem key={i._id} value={i._id} className="py-3">
-                            {i.name} ({i.currentStock} {i.unit} left)
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Quantity</label>
-                  <Input
-                    type="number"
-                    inputMode="decimal"
-                    className="h-16 text-3xl text-center font-mono font-bold bg-white/40 backdrop-blur-sm border-2 border-primary/20"
-                    placeholder="0"
-                    value={quantity}
-                    onChange={e => setQuantity(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Reason</label>
-                  <Select value={reason} onValueChange={(val) => setReason(val || 'spoilage')}>
-                    <SelectTrigger className="h-12 bg-white/40 backdrop-blur-sm border-2 border-primary/20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="spoilage">Spoilage</SelectItem>
-                      <SelectItem value="expired">Expired</SelectItem>
-                      <SelectItem value="overproduction">Overproduction</SelectItem>
-                      <SelectItem value="damaged">Damaged</SelectItem>
-                      <SelectItem value="customer_return">Customer Return</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger 
+            render={
+              <Button size="lg" className="rounded-xl shadow-lg active:scale-95 text-md px-6 bg-merlot hover:bg-merlot/90 text-white border-none">
+                Log Waste
+              </Button>
+            }
+          />
+          <DialogContent className="bg-card border-border max-w-sm">
+            <DialogHeader className="p-6 pb-2">
+              <DialogTitle className="text-2xl font-heading">Record Waste</DialogTitle>
+            </DialogHeader>
+            <div className="px-6 py-4 space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-foreground/70">Select Item</label>
+                <Select value={selectedItem} onValueChange={(val) => setSelectedItem(val || '')}>
+                  <SelectTrigger className="h-14 text-lg bg-white border-2 border-primary/10 w-full px-4 rounded-xl">
+                    <SelectValue placeholder="Tap to choose item">
+                      {selectedItem && inventory?.find((i: any) => i._id === selectedItem)?.name}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[40vh]">
+                    {isLoading ? <div className="p-2"><Skeleton className="h-8 w-full" /></div> :
+                      inventory?.slice().sort((a: any, b: any) => a.name.localeCompare(b.name)).map((i: any) => (
+                        <SelectItem key={i._id} value={i._id} className="py-3 px-4">
+                          <span className="font-semibold">{i.name}</span>
+                          <span className="ml-2 text-xs text-muted-foreground">({i.currentStock} {i.unit} left)</span>
+                        </SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
               </div>
-              <DrawerFooter className="pt-8 pb-8">
-                <Button
-                  onClick={handleLogWaste}
-                  disabled={mutation.isPending}
-                  className={`h-14 text-lg rounded-xl shadow-md text-white border-none transition-colors duration-500 ${isSubmitSuccess ? 'bg-green-600 hover:bg-green-600' : 'bg-merlot hover:bg-merlot/90'}`}
-                >
-                  {mutation.isPending ? 'Saving...' : isSubmitSuccess ? '✓ Saved' : 'Confirm Waste Log'}
-                </Button>
-                <DrawerClose asChild>
-                  <Button variant="outline" className="h-12 rounded-xl">Cancel</Button>
-                </DrawerClose>
-              </DrawerFooter>
+
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-foreground/70">Quantity</label>
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  className="h-16 text-3xl text-center font-mono font-bold bg-white border-2 border-primary/10 rounded-xl"
+                  placeholder="0"
+                  value={quantity}
+                  onChange={e => setQuantity(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-foreground/70">Reason</label>
+                <Select value={reason} onValueChange={(val) => setReason(val || 'spoilage')}>
+                  <SelectTrigger className="h-12 bg-white border-2 border-primary/10 w-full px-4 rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="spoilage">Spoilage</SelectItem>
+                    <SelectItem value="expired">Expired</SelectItem>
+                    <SelectItem value="overproduction">Overproduction</SelectItem>
+                    <SelectItem value="damaged">Damaged</SelectItem>
+                    <SelectItem value="customer_return">Customer Return</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </DrawerContent>
-        </Drawer>
+            <DialogFooter className="flex flex-col gap-3 p-6 pt-2">
+              <Button
+                onClick={handleLogWaste}
+                disabled={mutation.isPending}
+                className={`h-14 w-full text-lg font-bold rounded-xl shadow-md text-white border-none transition-all duration-500 active:scale-95 ${isSubmitSuccess ? 'bg-green-600 hover:bg-green-600' : 'bg-merlot hover:bg-merlot/90'}`}
+              >
+                {mutation.isPending ? 'Saving...' : isSubmitSuccess ? '✓ Saved' : 'Confirm Waste Log'}
+              </Button>
+              <DialogClose render={
+                <Button variant="outline" className="h-12 w-full rounded-xl font-semibold border-2 border-primary/5 hover:bg-primary/5">
+                  Cancel
+                </Button>
+              } />
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Placeholder for logs list */}
