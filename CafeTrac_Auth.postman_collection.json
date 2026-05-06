@@ -1,0 +1,58 @@
+{
+  "info": {
+    "name": "CafeTrac_Auth",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@cafetrac.com\",\n    \"password\": \"securepassword123\",\n    \"cafeName\": \"Central Perk\"\n}"
+        },
+        "url": { "raw": "http://localhost:5000/api/v1/auth/register", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "v1", "auth", "register"] }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"john@cafetrac.com\",\n    \"password\": \"securepassword123\"\n}"
+        },
+        "url": { "raw": "http://localhost:5000/api/v1/auth/login", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "v1", "auth", "login"] }
+      }
+    },
+    {
+      "name": "Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": { "raw": "http://localhost:5000/api/v1/auth/refresh", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "v1", "auth", "refresh"] }
+      }
+    },
+    {
+      "name": "Get Me",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/v1/users/me", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "v1", "users", "me"] }
+      }
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": { "raw": "http://localhost:5000/api/v1/auth/logout", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "v1", "auth", "logout"] }
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+name: CafeTrac CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Install backend
+        run: cd backend && npm ci
+      - name: Type check backend
+        run: cd backend && npx tsc --noEmit
+      - name: Security audit
+        run: cd backend && npm audit --audit-level=high
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Install frontend
+        run: cd frontend && npm ci
+      - name: Type check frontend
+        run: cd frontend && npx tsc -p tsconfig.app.json --noEmit
+      - name: Build frontend
+        run: cd frontend && npm run build
+      - name: Security audit
+        run: cd frontend && npm audit --audit-level=high
